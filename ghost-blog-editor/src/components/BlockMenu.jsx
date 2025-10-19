@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function BlockMenu({ editor, onClose }) {
+export default function BlockMenu({ editor, onClose, onOpenUnsplash }) {
   const [showImageInput, setShowImageInput] = useState(false);
   const [showYoutubeInput, setShowYoutubeInput] = useState(false);
   const [showHtmlInput, setShowHtmlInput] = useState(false);
@@ -353,7 +353,10 @@ export default function BlockMenu({ editor, onClose }) {
     },
     { 
       label: "Unsplash", 
-      onClick: () => alert("Unsplash integration coming soon!"),
+      onClick: () => {
+        onOpenUnsplash(); // Call parent function
+        onClose(); // Close block menu
+      },
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <g clipPath="url(#clip0_unsplash)">

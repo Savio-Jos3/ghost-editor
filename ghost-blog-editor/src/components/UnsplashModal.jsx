@@ -53,7 +53,7 @@ export default function UnsplashModal({ editor, onClose }) {
           maxHeight: '80vh',
           background: '#FFFFFF',
           borderRadius: '12px',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column'
@@ -77,7 +77,7 @@ export default function UnsplashModal({ editor, onClose }) {
             style={{
               background: 'transparent',
               border: 'none',
-              fontSize: '24px',
+              fontSize: '28px',
               cursor: 'pointer',
               color: '#6B7280',
               padding: '0',
@@ -85,7 +85,8 @@ export default function UnsplashModal({ editor, onClose }) {
               height: '32px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              lineHeight: 1
             }}
           >
             ×

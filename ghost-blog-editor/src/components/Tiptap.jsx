@@ -9,15 +9,14 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { useState, useEffect } from "react";
 import BlockMenu from "./BlockMenu";
 import BubbleMenuBar from "./BubbleMenuBar";
-import UnsplashModal from "./UnsplashModal";
 import { Bookmark } from "../extensions/Bookmark";
 import { HtmlEmbed } from "../extensions/HtmlEmbed";
 import { TwitterEmbed } from "../extensions/TwitterEmbed.jsx";
+import UnsplashModal from "./UnsplashModal";
 
 export default function Tiptap({ content, onUpdate, placeholder = "Begin writing your post..." }) {
   const [showBlockMenu, setShowBlockMenu] = useState(false);
   const [showUnsplashModal, setShowUnsplashModal] = useState(false);
-
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -34,16 +33,17 @@ export default function Tiptap({ content, onUpdate, placeholder = "Begin writing
       }),
       Bookmark,
       HtmlEmbed,
-      TwitterEmbed,
+      TwitterEmbed,  // ← Add this
       Placeholder.configure({
         placeholder: placeholder,
         emptyEditorClass: 'is-editor-empty',
       }),
     ],
     content: content || "<p></p>",
-    onUpdate: ({ editor }) => {
-      onUpdate(editor.getHTML());
-    },
+onUpdate: ({ editor }) => {
+  onUpdate(editor.getHTML());
+  // Don't close block menu on update - let it stay open
+},
     editorProps: {
       attributes: {
         style: 'font-family: Georgia, serif; font-size: 18px; line-height: 28px; color: #09090B; outline: none; min-height: 200px;',
@@ -65,6 +65,7 @@ export default function Tiptap({ content, onUpdate, placeholder = "Begin writing
     <div style={{ position: 'relative', width: '100%' }}>
       <EditorContent editor={editor} />
       
+      {/* Plus Button - Floating Menu for empty lines */}
       <FloatingMenu
         editor={editor}
         tippyOptions={{ 
@@ -80,6 +81,7 @@ export default function Tiptap({ content, onUpdate, placeholder = "Begin writing
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
+          {/* Plus button - Always visible */}
           <button
             onClick={() => setShowBlockMenu((prev) => !prev)}
             style={{
@@ -105,21 +107,20 @@ export default function Tiptap({ content, onUpdate, placeholder = "Begin writing
             </svg>
           </button>
           
+          {/* Block Menu - Shows to the right of plus button */}
           {showBlockMenu && (
             <div style={{ position: 'absolute', left: '40px', top: 0, zIndex: 20 }}>
-              <BlockMenu 
-                editor={editor} 
-                onClose={() => setShowBlockMenu(false)} 
-                onOpenUnsplash={() => {
-                  setShowUnsplashModal(true);
-                  setShowBlockMenu(false);
-                }}
-              />
+             <BlockMenu 
+  editor={editor} 
+  onClose={() => setShowBlockMenu(false)} 
+  onOpenUnsplash={() => setShowUnsplashModal(true)} 
+/>
             </div>
           )}
         </div>
       </FloatingMenu>
 
+      {/* Bubble Menu for text selection */}
       <BubbleMenu
         editor={editor}
         tippyOptions={{ 
@@ -135,8 +136,7 @@ export default function Tiptap({ content, onUpdate, placeholder = "Begin writing
       >
         <BubbleMenuBar editor={editor} />
       </BubbleMenu>
-
-      {/* Unsplash Modal */}
+       {/* Add Unsplash Modal */}
       {showUnsplashModal && (
         <UnsplashModal 
           editor={editor} 
