@@ -21,8 +21,8 @@ export default function PostEditor({ postId, onBack }) {
   const [featuredImage, setFeaturedImage] = useState(post?.featuredImage || "");
   const [saveStatus, setSaveStatus] = useState("saved");
   const [showPreview, setShowPreview] = useState(false);
-const saveTimerRef = useRef(null);
-const hideTimerRef = useRef(null);
+const saveTimeoutRef = useRef(null);
+const hideTimeoutRef = useRef(null);
   const stats = useMemo(() => calculateStats(content), [content]);
 
 // Fixed auto-save with proper status updates
@@ -32,21 +32,44 @@ const hideTimerRef = useRef(null);
 // Delete the saveDraft useCallback completely
 
 // Replace with this single useEffect:
+// Better auto-save approach
 useEffect(() => {
   if (!post) return;
-  
+
+  // Clear any existing timers
+  if (saveTimeoutRef.current) {
+    clearTimeout(saveTimeoutRef.current);
+  }
+  if (hideTimeoutRef.current) {
+    clearTimeout(hideTimeoutRef.current);
+  }
+
+  // Show saving immediately
   setSaveStatus("saving");
-  
-  const timer = setTimeout(() => {
+
+  // Save after 1 second
+  saveTimeoutRef.current = setTimeout(() => {
     updatePost(postId, { title, content, featuredImage });
+    
+    // Show saved
     setSaveStatus("saved");
     
-    setTimeout(() => setSaveStatus(null), 2000);
+    // Hide after 2 seconds
+    hideTimeoutRef.current = setTimeout(() => {
+      setSaveStatus(null);
+    }, 2000);
   }, 1000);
-  
-  return () => clearTimeout(timer);
-}, [title, content, featuredImage, postId, post]); // NO updatePost here!
 
+  // Cleanup
+  return () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+    }
+  };
+}, [title, content, featuredImage]);  // Only these dependencies!
 
 
   const handleImageUpload = (e) => {
@@ -137,22 +160,20 @@ useEffect(() => {
                 }}
               >
                 {/* Arrow SVG - 18px x 18px */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-end',
-                    padding: 0,
-                    width: '18px',
-                    height: '18px',
-                    transform: 'rotate(90deg)'
-                  }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ transform: 'rotate(90deg)' }}>
-                    <path d="M13.5 6.75L9 11.25L4.5 6.75" stroke="#71717B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
+<div
+  style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '18px',
+    height: '18px'
+  }}
+>
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style={{ transform: 'rotate(90deg)' }}>
+    <path d="M13.5 6.75L9 11.25L4.5 6.75" stroke="#71717B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+</div>
+
 
                 {/* Posts Text - 43px x 24px */}
                 <span
