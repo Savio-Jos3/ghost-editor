@@ -1,0 +1,66 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5rem auto;
+}
+
+.prose iframe,
+.prose youtube-player {
+  width: 100%;
+  aspect-ratio: 16/9;
+  margin: 1.5rem 0;
+}
+
+/* Tiptap placeholder styles */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #99A1AF;
+  font-family: 'Georgia', serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 28px;
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror {
+  font-family: 'Georgia', serif;
+  font-size: 18px;
+  line-height: 28px;
+  color: #09090B;
+  outline: none;
+  min-height: 200px;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* HTML Embed Styles */
+.html-embed {
+  margin: 16px 0;
+}
+
+.html-embed iframe,
+.html-embed embed,
+.html-embed object {
+  max-width: 100%;
+}
+
+/* HTML Embed Node */
+.html-embed-node {
+  margin: 16px 0;
+}
+
+.html-embed-node * {
+  box-sizing: border-box;
+}
