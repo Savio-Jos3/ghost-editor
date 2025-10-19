@@ -1,53 +1,47 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export const usePostStore = create(
   persist(
     (set) => ({
       posts: [],
       
-addPost: (postData) => {
-  const newPost = {
-    id: Date.now().toString(),
-    title: postData.title || '',  // ← Empty string, not "Post Title"
-    content: postData.content || '',
-    featuredImage: postData.featuredImage || '',
-    status: 'draft',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    publishedAt: null,
-  };
-  set((state) => ({ posts: [newPost, ...state.posts] }));
-  return newPost;
-},
+      addPost: (post) =>
+        set((state) => ({
+          posts: [
+            ...state.posts,
+            {
+              ...post,
+              id: Date.now(),
+              createdAt: new Date().toISOString(),
+              status: 'draft',
+            },
+          ],
+        })),
 
-
-      
       updatePost: (id, updates) =>
         set((state) => ({
           posts: state.posts.map((post) =>
-            post.id === id ? { ...post, ...updates } : post
+            post.id === id ? { ...post, ...updates, updatedAt: new Date().toISOString() } : post
           ),
         })),
-      
-      publishPost: (id) =>
-        set((state) => ({
-          posts: state.posts.map((post) =>
-            post.id === id 
-              ? { ...post, status: "published", publishedAt: new Date().toISOString() } 
-              : post
-          ),
-        })),
-      
+
       deletePost: (id) =>
         set((state) => ({
           posts: state.posts.filter((post) => post.id !== id),
         })),
+
+      publishPost: (id) =>
+        set((state) => ({
+          posts: state.posts.map((post) =>
+            post.id === id
+              ? { ...post, status: 'published', publishedAt: new Date().toISOString() }
+              : post
+          ),
+        })),
     }),
     {
-      name: 'ghost-blog-posts', // name of the item in localStorage (must be unique)
-      storage: createJSONStorage(() => localStorage), // use localStorage
+      name: 'ghost-posts-storage',
     }
   )
 );
-

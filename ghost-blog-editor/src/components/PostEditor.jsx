@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { usePostStore } from "../store/postStore.js";
 import Tiptap from "./Tiptap";
 import PostPreview from "./PostPreview";
@@ -21,18 +21,33 @@ export default function PostEditor({ postId, onBack }) {
   const [featuredImage, setFeaturedImage] = useState(post?.featuredImage || "");
   const [saveStatus, setSaveStatus] = useState("saved");
   const [showPreview, setShowPreview] = useState(false);
-
+const saveTimerRef = useRef(null);
+const hideTimerRef = useRef(null);
   const stats = useMemo(() => calculateStats(content), [content]);
 
-  useEffect(() => {
-    if (!post) return;
-    setSaveStatus("saving");
-    const timer = setTimeout(() => {
-      updatePost(postId, { title, content, featuredImage });
-      setSaveStatus("saved");
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, [title, content, featuredImage, postId, updatePost, post]);
+// Fixed auto-save with proper status updates
+// Memoized save function
+
+// Auto-save when content changes
+// Delete the saveDraft useCallback completely
+
+// Replace with this single useEffect:
+useEffect(() => {
+  if (!post) return;
+  
+  setSaveStatus("saving");
+  
+  const timer = setTimeout(() => {
+    updatePost(postId, { title, content, featuredImage });
+    setSaveStatus("saved");
+    
+    setTimeout(() => setSaveStatus(null), 2000);
+  }, 1000);
+  
+  return () => clearTimeout(timer);
+}, [title, content, featuredImage, postId, post]); // NO updatePost here!
+
+
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -349,8 +364,6 @@ export default function PostEditor({ postId, onBack }) {
               }}
             >
               {!featuredImage ? (
-                <>
-{!featuredImage ? (
   <>
     {/* Cloud Upload Icon - 20px x 17px */}
     <svg width="20" height="17" viewBox="0 0 20 17" fill="none">
@@ -399,47 +412,6 @@ export default function PostEditor({ postId, onBack }) {
   <img src={featuredImage} alt="Featured" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
 )}
 
-                  {/* Text */}
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      padding: 0,
-                      gap: '5px',
-                      width: '291px',
-                      height: '41px'
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'Inter, sans-serif',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '20px',
-                        color: '#6A7282',
-                        textAlign: 'center'
-                      }}
-                    >
-                      Click to upload post cover or drag and drop
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'Inter, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '12px',
-                        lineHeight: '16px',
-                        color: '#99A1AF',
-                        textAlign: 'center'
-                      }}
-                    >
-                      SVG, PNG, JPG or GIF (MAX. 800x400px)
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <img src={featuredImage} alt="Featured" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-              )}
               <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
             </label>
           </div>

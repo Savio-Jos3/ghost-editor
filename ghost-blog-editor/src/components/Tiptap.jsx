@@ -66,13 +66,14 @@ onUpdate: ({ editor }) => {
       <EditorContent editor={editor} />
       
       {/* Plus Button - Floating Menu for empty lines */}
-      <FloatingMenu
-        editor={editor}
-        tippyOptions={{ 
-          duration: 100, 
-          placement: 'left',
-          offset: [-48, 0]
-        }}
+<FloatingMenu
+  editor={editor}
+  tippyOptions={{ 
+    duration: 100, 
+    placement: 'left-start',  // Changed
+    offset: [0, 0]             // Changed
+  }}
+
         shouldShow={({ editor, state }) => {
           const { $from } = state.selection;
           const isRootDepth = $from.depth === 1;
